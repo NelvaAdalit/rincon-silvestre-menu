@@ -69,6 +69,23 @@ body {
   margin-bottom: 12px;
 }
 
+.restaurant-logo-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-primary);
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+  background-color: var(--color-surface);
+  transition: var(--transition);
+}
+
+.restaurant-logo-img:hover {
+  transform: scale(1.05) rotate(5deg);
+  border-color: var(--color-accent);
+  box-shadow: 0 8px 25px rgba(255, 183, 77, 0.5);
+}
+
 .logo-badge {
   background: linear-gradient(135deg, var(--color-primary), #ff7043);
   padding: 8px 16px;

@@ -96,7 +96,7 @@ const menuData = {
 
 // 2. Global State
 let cart = {}; // format: { itemId: quantity }
-const rincónWhatsappNumber = "59176114565"; // Actual WhatsApp from TikTok
+const rincónWhatsappNumber = "59173418452"; // Actual WhatsApp from TikTok
 
 // 3. Elements selector
 document.addEventListener("DOMContentLoaded", () => {

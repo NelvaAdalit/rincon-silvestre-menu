@@ -393,6 +393,13 @@ function sendOrder() {
   text += `\n💰 *Total a pagar:* ${subtotal} Bs.\n\n`;
   text += `📎 *Adjunto:* En este momento les envío el comprobante del pago por transferencia/QR.\n\n¿Me confirman la recepción de la transferencia y el pedido? ¡Muchas gracias!`;
 
+  // Generate Digital Receipt PDF
+  try {
+    generatePDFReceipt(nombre, servicio, detalles, cart, subtotal);
+  } catch (error) {
+    console.error("Error al generar el recibo PDF:", error);
+  }
+
   const url = `https://api.whatsapp.com/send?phone=${rincónWhatsappNumber}&text=${encodeURIComponent(text)}`;
   window.open(url, "_blank");
 
@@ -428,4 +435,134 @@ function showToast(message) {
   setTimeout(() => {
     toast.classList.remove("show");
   }, 3500);
+}
+
+// 11. Generate Digital Receipt in PDF format (80mm ticket size)
+function generatePDFReceipt(nombre, servicio, detalles, cart, total) {
+  if (!window.jspdf) {
+    console.error("La librería jsPDF no está cargada.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  
+  // Calculate page height dynamically based on the number of items in the cart
+  const itemCount = Object.keys(cart).length;
+  const pageHeight = 100 + (itemCount * 12); // Base height + extra space per item
+  
+  const doc = new jsPDF({
+    unit: "mm",
+    format: [80, pageHeight] // 80mm roll width, dynamic height
+  });
+
+  const margin = 6;
+  let y = 12;
+
+  // Title & Subtitle
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("RINCÓN SILVESTRE", 40, y, { align: "center" });
+  y += 5;
+
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text("Carnes a la Parrilla • Sabor & Tradición", 40, y, { align: "center" });
+  y += 6;
+
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text("NOTA DE VENTA / RECIBO", 40, y, { align: "center" });
+  y += 6;
+
+  // Separator
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text("----------------------------------------------------------------------", 40, y, { align: "center" });
+  y += 5;
+
+  // Customer & Service Info
+  doc.setFont("Helvetica", "bold");
+  doc.text("Cliente: ", margin, y);
+  doc.setFont("Helvetica", "normal");
+  doc.text(nombre, margin + 12, y);
+  y += 4;
+
+  const serviceLabels = {
+    mesa: "Consumir en Mesa",
+    llevar: "Para Llevar / Recoger",
+    delivery: "Delivery a Domicilio"
+  };
+
+  doc.setFont("Helvetica", "bold");
+  doc.text("Servicio: ", margin, y);
+  doc.setFont("Helvetica", "normal");
+  doc.text(serviceLabels[servicio] || servicio, margin + 14, y);
+  y += 4;
+
+  const detailsLabel = servicio === "mesa" ? "Mesa: " : (servicio === "llevar" ? "Detalle: " : "Dirección: ");
+  doc.setFont("Helvetica", "bold");
+  doc.text(detailsLabel, margin, y);
+  doc.setFont("Helvetica", "normal");
+  
+  const splitDetails = doc.splitTextToSize(detalles || "-", 50);
+  doc.text(splitDetails, margin + 16, y);
+  y += splitDetails.length * 4;
+
+  const dateStr = new Date().toLocaleString("es-BO");
+  doc.setFont("Helvetica", "bold");
+  doc.text("Fecha: ", margin, y);
+  doc.setFont("Helvetica", "normal");
+  doc.text(dateStr, margin + 11, y);
+  y += 5;
+
+  // Separator
+  doc.text("----------------------------------------------------------------------", 40, y, { align: "center" });
+  y += 5;
+
+  // Table Headers
+  doc.setFont("Helvetica", "bold");
+  doc.text("Cant  Detalle", margin, y);
+  doc.text("Total", 74, y, { align: "right" });
+  y += 4;
+  doc.setFont("Helvetica", "normal");
+
+  // Cart Items
+  for (const itemId in cart) {
+    const qty = cart[itemId];
+    const item = findItemById(itemId);
+    if (item) {
+      const priceSum = item.price * qty;
+      const itemText = `${qty}x   ${item.title}`;
+      const splitTitle = doc.splitTextToSize(itemText, 50);
+      
+      doc.text(splitTitle, margin, y);
+      doc.text(`${priceSum} Bs.`, 74, y, { align: "right" });
+      
+      y += splitTitle.length * 4;
+    }
+  }
+
+  // Separator
+  doc.text("----------------------------------------------------------------------", 40, y, { align: "center" });
+  y += 5;
+
+  // Total amount
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text("TOTAL A PAGAR:", margin, y);
+  doc.text(`${total} Bs.`, 74, y, { align: "right" });
+  y += 8;
+
+  // Footer
+  doc.setFont("Helvetica", "italic");
+  doc.setFontSize(9);
+  doc.text("¡Gracias por su preferencia! 🔥", 40, y, { align: "center" });
+  y += 5;
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text("Sucre - Bolivia", 40, y, { align: "center" });
+
+  // Download PDF
+  const filename = `Recibo_Rincon_${nombre.replace(/\s+/g, '_')}.pdf`;
+  doc.save(filename);
 }

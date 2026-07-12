@@ -104,6 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTabs();
   setupEventListeners();
   updateCartUI();
+
+  // Set up Joinchat link dynamically
+  const joinchatLink = document.getElementById("whatsapp-joinchat");
+  if (joinchatLink) {
+    joinchatLink.href = `https://api.whatsapp.com/send?phone=${rincónWhatsappNumber}&text=${encodeURIComponent("Hola Rincón Silvestre, tengo una consulta...")}`;
+  }
 });
 
 // 4. Render Menu Dynamically
@@ -321,8 +327,8 @@ function setupEventListeners() {
   if (serviceType && detailsLabel && detailsInput) {
     serviceType.addEventListener("change", () => {
       if (serviceType.value === "mesa") {
-        detailsLabel.innerText = "Número de Mesa";
-        detailsInput.placeholder = "Ej. Mesa 4";
+        detailsLabel.innerText = "Ubicación de la Mesa";
+        detailsInput.placeholder = "Ej. Mesa adentro / Mesa en el patio";
       } else if (serviceType.value === "llevar") {
         detailsLabel.innerText = "Detalle Adicional (Opcional)";
         detailsInput.placeholder = "Ej. Pasar a recoger a las 8:30 PM";

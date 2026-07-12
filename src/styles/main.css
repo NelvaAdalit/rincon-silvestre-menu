@@ -555,3 +555,76 @@ body {
     font-size: 0.8rem;
   }
 }
+
+/* --- Floating WhatsApp Bubble (Joinchat Style) --- */
+.whatsapp-float-btn {
+  position: fixed;
+  bottom: 110px; /* Positioned above the sticky cart bar */
+  right: 20px;
+  background-color: #25d366; /* WhatsApp Green */
+  color: #ffffff !important;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  z-index: 999;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.whatsapp-float-btn i {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.5px;
+}
+
+.whatsapp-float-btn:hover {
+  transform: scale(1.1) rotate(5deg);
+  background-color: #128c7e;
+  box-shadow: 0 6px 20px rgba(18, 140, 126, 0.6);
+}
+
+.float-btn-badge {
+  position: absolute;
+  right: 70px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: var(--border);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.whatsapp-float-btn:hover .float-btn-badge {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Adjust button height on small screens */
+@media (max-width: 480px) {
+  .whatsapp-float-btn {
+    bottom: 95px;
+    width: 48px;
+    height: 48px;
+    right: 15px;
+  }
+  .whatsapp-float-btn i {
+    width: 24px;
+    height: 24px;
+  }
+  .float-btn-badge {
+    right: 60px;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+}

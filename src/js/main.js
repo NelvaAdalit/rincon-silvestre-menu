@@ -346,13 +346,20 @@ function sendReservation() {
   const fecha = document.getElementById("res-date").value;
   const hora = document.getElementById("res-time").value;
   const personas = document.getElementById("res-qty").value;
+  const ubicacion = document.getElementById("res-location").value;
   const detalles = document.getElementById("res-details").value;
+
+  const locationLabels = {
+    adentro: "Mesa adentro (Salón)",
+    afuera: "Mesa afuera (Patio / Jardín)"
+  };
 
   let text = `¡Hola Rincón Silvestre! 🔥\nQuiero solicitar una reserva de mesa:\n\n`;
   text += `👤 *Nombre:* ${nombre}\n`;
   text += `📅 *Fecha:* ${fecha}\n`;
   text += `⏰ *Hora:* ${hora}\n`;
   text += `👥 *Personas:* ${personas}\n`;
+  text += `📍 *Ubicación:* ${locationLabels[ubicacion]}\n`;
   if (detalles) {
     text += `💬 *Comentario adicional:* ${detalles}\n`;
   }

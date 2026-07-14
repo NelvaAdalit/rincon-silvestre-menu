@@ -327,14 +327,14 @@ function setupEventListeners() {
   if (serviceType && detailsLabel && detailsInput) {
     serviceType.addEventListener("change", () => {
       if (serviceType.value === "mesa") {
-        detailsLabel.innerText = "Ubicación de la Mesa";
+        detailsLabel.innerHTML = "Ubicación de la Mesa";
         detailsInput.placeholder = "Ej. Mesa adentro / Mesa en el patio";
       } else if (serviceType.value === "llevar") {
-        detailsLabel.innerText = "Detalle Adicional (Opcional)";
+        detailsLabel.innerHTML = "Detalle Adicional (Opcional)";
         detailsInput.placeholder = "Ej. Pasar a recoger a las 8:30 PM";
       } else {
-        detailsLabel.innerText = "Dirección de Envío y Ref.";
-        detailsInput.placeholder = "Ej. Calle Calvo #456, portón verde";
+        detailsLabel.innerHTML = "Dirección de Envío y Ref. <span style='color: #ff5722; font-weight: bold;'>*(Obligatorio enviar ubicación GPS por WhatsApp)*</span>";
+        detailsInput.placeholder = "Ej. Calle Calvo #456, portón verde. ¡Recuerde enviar su ubicación GPS en el chat!";
       }
     });
   }
@@ -423,7 +423,11 @@ function sendOrder() {
     delivery: "Delivery a Domicilio"
   };
   text += `📍 *Tipo de Servicio:* ${serviceLabels[servicio]}\n`;
-  text += `📋 *Detalle/Dirección:* ${detalles}\n\n`;
+  text += `📋 *Detalle/Dirección:* ${detalles}\n`;
+  if (servicio === "delivery") {
+    text += `📍 *Ubicación GPS:* [⚠️ OBLIGATORIO: Adjunte su ubicación en tiempo real/actual aquí en el chat de WhatsApp]\n`;
+  }
+  text += `\n`;
   text += `🍖 *PEDIDO:* \n`;
 
   let subtotal = 0;

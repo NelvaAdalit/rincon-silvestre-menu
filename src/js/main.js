@@ -323,19 +323,60 @@ function setupEventListeners() {
   const serviceType = document.getElementById("checkout-service-type");
   const detailsLabel = document.getElementById("checkout-details-label");
   const detailsInput = document.getElementById("checkout-details");
+  const btnGetLocation = document.getElementById("btn-get-location");
 
-  if (serviceType && detailsLabel && detailsInput) {
+  if (serviceType && detailsLabel && detailsInput && btnGetLocation) {
     serviceType.addEventListener("change", () => {
       if (serviceType.value === "mesa") {
         detailsLabel.innerHTML = "Ubicación de la Mesa";
         detailsInput.placeholder = "Ej. Mesa adentro / Mesa en el patio";
+        btnGetLocation.style.display = "none";
       } else if (serviceType.value === "llevar") {
         detailsLabel.innerHTML = "Detalle Adicional (Opcional)";
         detailsInput.placeholder = "Ej. Pasar a recoger a las 8:30 PM";
+        btnGetLocation.style.display = "none";
       } else {
-        detailsLabel.innerHTML = "Dirección de Envío y Ref. <span style='color: #ff5722; font-weight: bold;'>*(Obligatorio enviar ubicación GPS por WhatsApp)*</span>";
-        detailsInput.placeholder = "Ej. Calle Calvo #456, portón verde. ¡Recuerde enviar su ubicación GPS en el chat!";
+        detailsLabel.innerHTML = "Dirección de Envío y Ref. <span style='color: #ff5722; font-weight: bold;'>*(Ubicación GPS Requerida)*</span>";
+        detailsInput.placeholder = "Ej. Calle Calvo #456, portón verde. ¡Use el botón de abajo para obtener su GPS!";
+        btnGetLocation.style.display = "flex";
       }
+    });
+
+    btnGetLocation.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        showToast("La geolocalización no es compatible con este navegador.");
+        return;
+      }
+
+      btnGetLocation.disabled = true;
+      btnGetLocation.innerText = "Obteniendo ubicación GPS...";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+          detailsInput.value = `${mapsUrl} (Ref: )`;
+          showToast("¡Ubicación GPS obtenida con éxito!");
+
+          btnGetLocation.disabled = false;
+          btnGetLocation.innerHTML = `<i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Obtener mi Ubicación GPS`;
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+        },
+        (error) => {
+          console.error("Error obteniendo ubicación:", error);
+          showToast("No se pudo obtener la ubicación. Escríbela manualmente.");
+          btnGetLocation.disabled = false;
+          btnGetLocation.innerHTML = `<i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Obtener mi Ubicación GPS`;
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
     });
   }
 }

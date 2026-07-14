@@ -389,7 +389,11 @@ function sendReservation() {
     }
   }
 
-  text += `\n¿Tienen disponibilidad? ¡Muchas gracias!`;
+  if (preOrderText) {
+    text += `\n¿Tienen disponibilidad de mesa y stock de los platos/bebidas solicitados para confirmar? ¡Muchas gracias!`;
+  } else {
+    text += `\n¿Tienen disponibilidad de mesa para esa fecha y hora? ¡Muchas gracias!`;
+  }
 
   const url = `https://api.whatsapp.com/send?phone=${rincónWhatsappNumber}&text=${encodeURIComponent(text)}`;
   window.open(url, "_blank");

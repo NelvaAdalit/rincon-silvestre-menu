@@ -403,8 +403,8 @@ function sendOrder() {
     }
   }
 
-  text += `\n💰 *Total a pagar:* ${subtotal} Bs.\n\n`;
-  text += `📎 *Adjunto:* En este momento les envío el comprobante del pago por transferencia/QR.\n\n¿Me confirman la recepción de la transferencia y el pedido? ¡Muchas gracias!`;
+  text += `\n💰 *Total estimado:* ${subtotal} Bs.\n\n`;
+  text += `¿Me confirman disponibilidad de los platos para que pueda realizar el pago por transferencia/QR? ¡Muchas gracias!`;
 
   // Generate Digital Receipt PDF
   try {
@@ -483,8 +483,8 @@ function generatePDFReceipt(nombre, servicio, detalles, cart, total) {
   y += 6;
 
   doc.setFont("Helvetica", "bold");
-  doc.setFontSize(10);
-  doc.text("NOTA DE VENTA / RECIBO", 40, y, { align: "center" });
+  doc.setFontSize(9);
+  doc.text("DETALLE DE PEDIDO (Por Confirmar)", 40, y, { align: "center" });
   y += 6;
 
   // Separator

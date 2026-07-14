@@ -363,6 +363,32 @@ function sendReservation() {
   if (detalles) {
     text += `💬 *Comentario adicional:* ${detalles}\n`;
   }
+
+  // Check if they also pre-ordered items in the cart
+  let preOrderText = "";
+  let subtotal = 0;
+  for (const itemId in cart) {
+    const qty = cart[itemId];
+    const item = findItemById(itemId);
+    if (item) {
+      const priceSum = item.price * qty;
+      preOrderText += `• ${qty}x ${item.title} (${priceSum} Bs.)\n`;
+      subtotal += priceSum;
+    }
+  }
+
+  if (preOrderText) {
+    text += `\n🍖 *PRE-PEDIDO INCLUIDO:* \n${preOrderText}`;
+    text += `💰 *Total estimado consumo:* ${subtotal} Bs.\n`;
+    
+    // Also generate PDF receipt for their pre-order reference
+    try {
+      generatePDFReceipt(nombre, `reserva-${ubicacion}`, detalles, cart, subtotal);
+    } catch (error) {
+      console.error("Error al generar el recibo PDF:", error);
+    }
+  }
+
   text += `\n¿Tienen disponibilidad? ¡Muchas gracias!`;
 
   const url = `https://api.whatsapp.com/send?phone=${rincónWhatsappNumber}&text=${encodeURIComponent(text)}`;
@@ -372,6 +398,10 @@ function sendReservation() {
   showToast("¡Redirigiendo reserva a WhatsApp!");
   document.getElementById("modal-reservas").classList.remove("active");
   document.getElementById("reservation-form").reset();
+
+  if (preOrderText) {
+    clearCart();
+  }
 }
 
 // 10. Send Order to WhatsApp
@@ -503,7 +533,9 @@ function generatePDFReceipt(nombre, servicio, detalles, cart, total) {
   const serviceLabels = {
     mesa: "Consumir en Mesa",
     llevar: "Para Llevar / Recoger",
-    delivery: "Delivery a Domicilio"
+    delivery: "Delivery a Domicilio",
+    "reserva-adentro": "Reserva - Mesa Adentro",
+    "reserva-afuera": "Reserva - Mesa Afuera"
   };
 
   doc.setFont("Helvetica", "bold");
